@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Ethereum Smart contract</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Contract data</h2>
+       
+  <table class="table">
+    <thead>
+      <tr>
+        <th><input type="text" id="name" placeholder="Eg: Bibi" /></th>
+        <th><input type="text" id="age" placeholder="Eg: 23"/></th>
+        <th><input type="submit" id="btn-submit" /></th>
+      </tr>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>TxHash</th>
+      </tr>
+    </thead>
+    <tbody id="bcTable">    </tbody>
+  </table>
+</div>
+
+</body>
+<script type="text/javascript">
+  const baseURL = 'http://10.7.50.97:8085'
+  var tableData = [];
+  document.getElementById('btn-submit').onclick = async function(){
+    name = document.getElementById('name').value
+    age = document.getElementById('age').value
+    url = `${baseURL}/set/${name}/${age}`
+    var data = await performApi(url)
+    tableData.unshift(data)
+    refreshTable()
+  }
+
+ function performApi(url) {
+    return fetch(url).then((res)=> res.json())
+ }
+
+ function appendTable(item) {
+    document.getElementById('bcTable').innerHTML += `<tr>
+        <td>${item.name}</td>
+        <td>${item.age}</td>
+        <td>${item.txHash}</td>
+      </tr>`
+ }
+
+  async function setData() {
+    fetchUrl = `${baseURL}/fetchData`
+    result = await performApi(fetchUrl)
+    tableData = result.datas;
+    tableData.forEach((item) => {
+      appendTable(item)
+    })
+  }
+  setData()
+
+  function refreshTable() {
+    document.getElementById('bcTable').innerHTML = ''
+    tableData.forEach((item) => {
+      appendTable(item)
+    })
+  }
+
+</script>
+</html>
