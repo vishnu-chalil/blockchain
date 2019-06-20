@@ -3,76 +3,20 @@ const express = require('express');
 var Tx = require('ethereumjs-tx');
 var app = express()
 
-var url = 'http://127.0.0.1:7545';
+var url = 'https://ropsten.infura.io/v3/452e791b87004800bfd544280e414290';
 
-var rpcUrl = ''
+// const web3 = new Web3(new Web3.providers.HttpProvider(url));
+const web3 = new Web3(url);
+const account1 = '0xf7d2b9f1313dd8a47c56cffc833602e766dd39ae';
 
-const web3 = new Web3(new Web3.providers.HttpProvider(url));
+const privateKey = process.env.PRIVATE_KEY_1;
 
-const account1 = '0x3833829245E3271b19464bF3B4B2F435b234C844';
-
-const privateKey = process.env.PRIVATE_KEY_1
-
-const privateKey1 = Buffer.from(privateKey, 'hex')
+const privateKey1 = Buffer.from(privateKey, 'hex');
 
 web3.eth.defaultAccount =  account1
 
-const ABI = [
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_fName",
-				"type": "string"
-			},
-			{
-				"name": "_age",
-				"type": "uint256"
-			}
-		],
-		"name": "setInstructor",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"name": "age",
-				"type": "uint256"
-			}
-		],
-		"name": "Instructor",
-		"type": "event"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getInstructor",
-		"outputs": [
-			{
-				"name": "",
-				"type": "string"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	}
-]
-const contractAddr = '0x18d0bb82ff7e51ee17d4db9b58121bd5df7475d0'
+const ABI = [{"constant":false,"inputs":[{"name":"_fName","type":"string"},{"name":"_age","type":"uint256"}],"name":"setInstructor","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"age","type":"uint256"}],"name":"Instructor","type":"event"},{"constant":true,"inputs":[],"name":"getInstructor","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]
+const contractAddr = '0x8f7306f378757ff8032b4122a4c2a9e3e17acff7'
 
 const contract = new web3.eth.Contract(ABI, contractAddr)
 app.use(function(req, res, next){
@@ -110,7 +54,7 @@ function setInstructorName(name, age, res) {
 	
 		const serializedTx = tx.serialize()
 		const raw = '0x' + serializedTx.toString('hex')
-	
+		
 		web3.eth.sendSignedTransaction(raw, async (err, txHash) => {
 			console.log('err:', err, 'txHash:', txHash)
 			const result = await getInstructorDatas();
@@ -124,7 +68,7 @@ function setInstructorName(name, age, res) {
 
 async function getInstructorDatas() {
 	var responseData;
-	await contract.getPastEvents( 'Instructor', { fromBlock: 0, toBlock: 'latest'}, (err, events) => {
+	await contract.getPastEvents('Instructor', { fromBlock: 0, toBlock: 'latest'}, (err, events) => {
 		var response = {}
 		var data = []
 		for (x in events) {

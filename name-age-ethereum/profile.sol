@@ -1,20 +1,22 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.18;
 
-contract Profile {
-    struct Emplyee {
-        string name;
-        uint age;
-        uint weight;
-    }
-    Emplyee public employee;
+contract BigShot {
     
+    string fName;
+    uint age;
+    event Instructor(
+        string name,
+        uint age
+    );
     
-    function addNewPerson(string _name, uint _age, uint _weight) public {
-        employee.name = _name;
-        employee.age = _age;
-        employee.weight = _weight;
+    function setInstructor(string _fName, uint _age) public {
+       fName = _fName;
+       age = _age;
+       Instructor(_fName, _age);
     }
-    function getName() public returns (string) {
-        return employee.name;
-    }
+    
+    function getInstructor() view public returns (string, uint) {
+       return (fName, age);
+}
+   
 }
